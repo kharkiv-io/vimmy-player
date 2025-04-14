@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 rodio = "0.20.1"
 glob = "0.3.2"
+colored = "3.0.0"
