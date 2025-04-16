@@ -61,13 +61,15 @@ fn internal_executor() {
                     std::process::Command::new("clear").status().unwrap();
                 }
             }
-            ":set_volume" => {
-                if let Some(sink) = &current_song {
-                    println!("Type variable => from 0.1 to 1.0");
-                    io::stdin().read_line(&mut current_volume_)
-                        .expect("Failed!");
-                    sink.set_volume(current_volume_.trim().parse::<f32>().expect("Failed to set volume!"));
-                    std::process::Command::new("clear").status().unwrap();
+            _ if current_command_.starts_with(":set_volume ") => {
+                let splits: Vec<&str> = current_command_.split_whitespace().collect();
+                if splits.len() == 2 {
+                    if let Ok(var) = splits[1].parse::<fsize>() {
+                        if let Some(sink) = &current_song {
+                            sink.set_volume(var as f32);
+                            std::process::Command::new("clear").status().unwrap();
+                        }
+                    }
                 }
             }
             _ if current_command_.starts_with(":play ") => {
