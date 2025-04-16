@@ -13,7 +13,7 @@ use fsize::fsize;
 
 fn internal_executor() {
     std::process::Command::new("clear").status().unwrap();
-    let mut current_folder_: String = String::from("/full/path/to/playlist/*.mp3"); // You can change format to wav or ogg.
+    let mut current_folder_: String = String::from("/home/katowice/Desktop/whatisthathlike/intune-player/target/*.mp3"); // You can change format to wav or ogg.
     let mut songs_kiss_: Vec<PathBuf> = Vec::new();
     for path in glob(&current_folder_).unwrap().filter_map(Result::ok) {
         songs_kiss_.push(path.clone());
@@ -26,7 +26,7 @@ fn internal_executor() {
  █         ▐▌                  █     █      ▄   █           
            ▐▌                  ▀             ▀▀▀            
 
-Intune-player | Version 1.0.b 
+Intune-player | Version 1.0.c
 Developer : https://github.com/kharkiv-io
 
 "#;
@@ -58,6 +58,16 @@ Developer : https://github.com/kharkiv-io
                     println!("You're trying to unpause nothing!");
                 }
             }
+            _ if current_command_.starts_with(":set_playback_speed ") => {
+                let splits: Vec<&str> = current_command_.split_whitespace().collect();
+                if splits.len() == 2 {
+                    if let Ok(var) = splits[1].parse::<fsize>() {
+                        if let Some(sink) = &current_song {
+                            sink.set_speed(var as f32);
+                        }
+                    }
+                }
+            }
             _ if current_command_.starts_with(":set_volume ") => {
                 let splits: Vec<&str> = current_command_.split_whitespace().collect();
                 if splits.len() == 2 {
@@ -72,25 +82,23 @@ Developer : https://github.com/kharkiv-io
                     println!("Missed args.");
                 }
             }
-            _ if current_command_.starts_with(":play ") => {
-                let splits: Vec<&str> = current_command_.split_whitespace().collect();
-                if splits.len() == 2 {
-                    if let Ok(index) = splits[1].parse::<usize>() {
-                        if index > 0 && index <= songs_kiss_.len() {
-                            if let Some(sink) = current_song.take() {
-                                sink.stop();
-                            }
-                            let song_file = File::open(&songs_kiss_[index - 1]).unwrap();
-                            let source = Decoder::new(BufReader::new(song_file)).unwrap();
-                            let sink = Sink::try_new(&stream_handle).unwrap();
-                            sink.append(source);
-                            sink.play();
-                            current_song = Some(sink);
-                        } else {
-                            println!("Song never founded!"); 
-                        }
-                    }
+            ":next" => {
+                if let Some(sink) = &current_song {
+                    sink.skip_one();
                 }
+            }
+            ":play" => {
+                if let Some(sink) = current_song.take() {
+                    sink.stop();
+                }
+                let sink = Sink::try_new(&stream_handle).unwrap();
+                for i in 0..songs_kiss_.len() {
+                    let mut song_file = File::open(&songs_kiss_[i]).unwrap();
+                    let mut source = Decoder::new(BufReader::new(song_file)).unwrap();
+                    sink.append(source);
+                }
+                sink.play();
+                current_song = Some(sink);
             }
             _ => {
                 println!("Incorrect command!");
