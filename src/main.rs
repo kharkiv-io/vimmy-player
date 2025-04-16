@@ -8,38 +8,35 @@ use std::process;
 use std::thread;
 use std::path::PathBuf;
 use colored::Colorize;
-use fsize::fsize; 
+use fsize::fsize;
+
 
 fn internal_executor() {
     std::process::Command::new("clear").status().unwrap();
-    let mut current_folder_: String = String::from("your/path/to/your/playlist/*.mp3"); // You can change format to wav or ogg.
+    let mut current_folder_: String = String::from("/full/path/to/playlist/*.mp3"); // You can change format to wav or ogg.
     let mut songs_kiss_: Vec<PathBuf> = Vec::new();
     for path in glob(&current_folder_).unwrap().filter_map(Result::ok) {
         songs_kiss_.push(path.clone());
     }
     let ascii_art = r#"
 
-    ▄ ▄▄▄▄     ■  █  ▐▌▄▄▄▄  ▗▞▀▚▖▄▄▄▄  █ ▗▞▀▜▌▄   ▄ ▗▞▀▚▖ ▄▄▄ 
-    ▄ █   █ ▗▄▟▙▄▖▀▄▄▞▘█   █ ▐▛▀▀▘█   █ █ ▝▚▄▟▌█   █ ▐▛▀▀▘█    
-    █ █   █   ▐▌       █   █ ▝▚▄▄▖█▄▄▄▀ █       ▀▀▀█ ▝▚▄▄▖█    
-    █         ▐▌                  █     █      ▄   █           
-              ▐▌                  ▀             ▀▀▀            
+ ▄ ▄▄▄▄     ■  █  ▐▌▄▄▄▄  ▗▞▀▚▖▄▄▄▄  █ ▗▞▀▜▌▄   ▄ ▗▞▀▚▖ ▄▄▄ 
+ ▄ █   █ ▗▄▟▙▄▖▀▄▄▞▘█   █ ▐▛▀▀▘█   █ █ ▝▚▄▟▌█   █ ▐▛▀▀▘█    
+ █ █   █   ▐▌       █   █ ▝▚▄▄▖█▄▄▄▀ █       ▀▀▀█ ▝▚▄▄▖█    
+ █         ▐▌                  █     █      ▄   █           
+           ▐▌                  ▀             ▀▀▀            
 
-    Intune-player | Version 1.0.b
-    Developer : https://github.com/kharkiv-io
-    
-    Commands : 
-    :q - quit | :play <index> - start playing new song 
-    :pause - pausing song | :unpause - resume play 
-    :set_volume <var> - set volume ( 0.01 - 1.0 )
-    "#;
-    
+Intune-player | Version 1.0.b 
+Developer : https://github.com/kharkiv-io
+
+"#;
+    println!("{}", ascii_art);
     let mut current_song: Option<Sink> = None;
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     loop {
-        println!("{}", ascii_art);
         let mut current_command_: String = String::new();
         let mut current_volume_: String = String::new();
+        println!("[ intune-player ]");
         io::stdin().read_line(&mut current_command_)
             .expect("Failure while read!");
         let current_command_ = current_command_.trim();
@@ -50,16 +47,15 @@ fn internal_executor() {
             ":pause" => {
                 if let Some(sink) = &current_song {
                     sink.pause();
-                    std::process::Command::new("clear").status().unwrap();
                 } else {
-                    std::process::Command::new("clear").status().unwrap();
                     println!("You're trying to pause nothing!");
                 }
             }
             ":unpause" => {
                 if let Some(sink) = &current_song {
                     sink.play();
-                    std::process::Command::new("clear").status().unwrap();
+                } else {
+                    println!("You're trying to unpause nothing!");
                 }
             }
             _ if current_command_.starts_with(":set_volume ") => {
@@ -68,9 +64,12 @@ fn internal_executor() {
                     if let Ok(var) = splits[1].parse::<fsize>() {
                         if let Some(sink) = &current_song {
                             sink.set_volume(var as f32);
-                            std::process::Command::new("clear").status().unwrap();
                         }
+                    } else {
+                        println!("Wtf?");
                     }
+                } else {
+                    println!("Missed args.");
                 }
             }
             _ if current_command_.starts_with(":play ") => {
@@ -87,17 +86,13 @@ fn internal_executor() {
                             sink.append(source);
                             sink.play();
                             current_song = Some(sink);
-                            std::process::Command::new("clear").status().unwrap();
-                            println!("Song playing -> {}", songs_kiss_[index-1].display());
-                    } else {
-                            std::process::Command::new("clear").status().unwrap();
-                            println!("Song with ID : {} never founded!", current_command_); 
+                        } else {
+                            println!("Song never founded!"); 
                         }
                     }
                 }
             }
             _ => {
-                std::process::Command::new("clear").status().unwrap();
                 println!("Incorrect command!");
             }
         }
