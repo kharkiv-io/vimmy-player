@@ -24,15 +24,15 @@ fn internal_executor() {
     █         ▐▌                  █     █      ▄   █           
               ▐▌                  ▀             ▀▀▀            
 
-    Intune-player | Version 1.0 
-    Developer : https://github.com/katowice-io
+    Intune-player | Version 1.0.b
+    Developer : https://github.com/kharkiv-io
     
     Commands : 
     :q - quit | :play <index> - start playing new song 
     :pause - pausing song | :unpause - resume play 
-    :set_volume - set volume
-    ( default volume is 100% - 1.0 )
+    :set_volume <var> - set volume ( 0.01 - 1.0 )
     "#;
+    
     let mut current_song: Option<Sink> = None;
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     loop {
