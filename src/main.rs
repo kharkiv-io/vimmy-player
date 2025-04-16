@@ -8,6 +8,7 @@ use std::process;
 use std::thread;
 use std::path::PathBuf;
 use colored::Colorize;
+use fsize::fsize; 
 
 fn internal_executor() {
     std::process::Command::new("clear").status().unwrap();
