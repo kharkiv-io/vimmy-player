@@ -21,7 +21,7 @@ Commands
 :pause - pauses current playing song 
 :unpause - unpause current song 
 :songs_loaded - get number of loaded songs 
-:kill_sink - clear all queue (sink( and pause playnig
+:kill_sink - clear all queue (sink) and pause playnig
 :set_volume <float> - set volume percentage
 :next - play next song that's loaded in sink 
 :play - start playing
