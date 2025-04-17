@@ -13,30 +13,26 @@ use fsize::fsize;
 
 fn internal_executor() {
     std::process::Command::new("clear").status().unwrap();
-    let mut current_folder_: String = String::from("/home/katowice/Desktop/whatisthathlike/intune-player/target/*.mp3"); // You can change format to wav or ogg.
+    let mut current_folder_: String = String::from("/home/path/to/your/playlist/folder/*.mp3"); // You can change format to wav or ogg.
     let mut songs_kiss_: Vec<PathBuf> = Vec::new();
     for path in glob(&current_folder_).unwrap().filter_map(Result::ok) {
         songs_kiss_.push(path.clone());
     }
     let ascii_art = r#"
-
- ▄ ▄▄▄▄     ■  █  ▐▌▄▄▄▄  ▗▞▀▚▖▄▄▄▄  █ ▗▞▀▜▌▄   ▄ ▗▞▀▚▖ ▄▄▄ 
- ▄ █   █ ▗▄▟▙▄▖▀▄▄▞▘█   █ ▐▛▀▀▘█   █ █ ▝▚▄▟▌█   █ ▐▛▀▀▘█    
- █ █   █   ▐▌       █   █ ▝▚▄▄▖█▄▄▄▀ █       ▀▀▀█ ▝▚▄▄▖█    
- █         ▐▌                  █     █      ▄   █           
-           ▐▌                  ▀             ▀▀▀            
-
-Intune-player | Version 1.0.c
+       ___            ___     __                 ___  __  
+| |\ |  |  |  | |\ | |__  __ |__) |     /\  \ / |__  |__) 
+| | \|  |  \__/ | \| |___    |    |___ /~~\  |  |___ |  \ 
+                                                          
+Intunie-player | Version 1.0.f
 Developer : https://github.com/kharkiv-io
-
 "#;
-    println!("{}", ascii_art);
+    println!("{}", Colorize::white(ascii_art));
     let mut current_song: Option<Sink> = None;
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     loop {
         let mut current_command_: String = String::new();
         let mut current_volume_: String = String::new();
-        println!("[ intune-player ]");
+        println!("{}", Colorize::white("[ intune-player ] "));
         io::stdin().read_line(&mut current_command_)
             .expect("Failure while read!");
         let current_command_ = current_command_.trim();
@@ -66,6 +62,11 @@ Developer : https://github.com/kharkiv-io
                             sink.set_speed(var as f32);
                         }
                     }
+                }
+            }
+            ":kill_sink" => {
+                if let Some(sink) = &current_song {
+                    sink.clear();
                 }
             }
             _ if current_command_.starts_with(":set_volume ") => {
