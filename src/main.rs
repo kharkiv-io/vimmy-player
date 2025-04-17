@@ -23,7 +23,7 @@ fn internal_executor() {
 | |\ |  |  |  | |\ | |__  __ |__) |     /\  \ / |__  |__) 
 | | \|  |  \__/ | \| |___    |    |___ /~~\  |  |___ |  \ 
                                                           
-Intunie-player | Version 1.0.f
+Intunie-player | Version 1.0.e
 Developer : https://github.com/kharkiv-io
 "#;
     println!("{}", Colorize::white(ascii_art));
@@ -45,6 +45,11 @@ Developer : https://github.com/kharkiv-io
                     sink.pause();
                 } else {
                     println!("You're trying to pause nothing!");
+                }
+            }
+            ":songs_loaded" => {
+                if let Some(sink) = &current_song {
+                    println!("{} songs in queue right now!", sink.len());
                 }
             }
             ":unpause" => {
