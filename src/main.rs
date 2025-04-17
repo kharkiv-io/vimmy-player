@@ -23,7 +23,7 @@ fn internal_executor() {
 | |\ |  |  |  | |\ | |__  __ |__) |     /\  \ / |__  |__) 
 | | \|  |  \__/ | \| |___    |    |___ /~~\  |  |___ |  \ 
                                                           
-Intunie-player | Version 1.0.e
+Intunie-player | Version 1.0.r
 Developer : https://github.com/kharkiv-io
 "#;
     println!("{}", Colorize::white(ascii_art));
@@ -32,7 +32,7 @@ Developer : https://github.com/kharkiv-io
     loop {
         let mut current_command_: String = String::new();
         let mut current_volume_: String = String::new();
-        println!("{}", Colorize::white("[ intune-player ] "));
+        println!("{}", Colorize::white("[ intune-player ]! "));
         io::stdin().read_line(&mut current_command_)
             .expect("Failure while read!");
         let current_command_ = current_command_.trim();
@@ -50,6 +50,8 @@ Developer : https://github.com/kharkiv-io
             ":songs_loaded" => {
                 if let Some(sink) = &current_song {
                     println!("{} songs in queue right now!", sink.len());
+                } else {
+                    println!("Failed to get songs in sink.");
                 }
             }
             ":unpause" => {
